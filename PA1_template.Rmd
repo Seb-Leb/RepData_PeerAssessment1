@@ -5,7 +5,7 @@ output:
     keep_md: true
 ---
 
-
+Sebastien Leblanc
 ## Loading and preprocessing the data
 
 ### Loading the data & necessary libraries

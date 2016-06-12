@@ -1,25 +1,72 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
 
 ### Loading the data & necessary libraries
-```{r}
-library(lubridate)
-library(dplyr)
-library(ggplot2)
 
+```r
+library(lubridate)
+```
+
+```
+## Warning: package 'lubridate' was built under R version 3.2.4
+```
+
+```
+## 
+## Attaching package: 'lubridate'
+```
+
+```
+## The following object is masked from 'package:base':
+## 
+##     date
+```
+
+```r
+library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:lubridate':
+## 
+##     intersect, setdiff, union
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
+library(ggplot2)
+```
+
+```
+## Warning: package 'ggplot2' was built under R version 3.2.4
+```
+
+```r
 act_data = read.csv("activity.csv")
 ```
 ## What is mean total number of steps taken per day?
 
 ### Histogram of total number of steps (NA data ignored)
-```{r}
+
+```r
 daily_avrg <- act_data %>%
     group_by(date) %>%
     select(steps) %>%
@@ -28,16 +75,31 @@ ggplot(daily_avrg, aes(steps_sum))+
     geom_histogram(binwidth=1000)
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)
+
 ### Mean and median of total number of steps 
-```{r}
+
+```r
 mean(daily_avrg$steps_sum)
+```
+
+```
+## [1] 9354.23
+```
+
+```r
 median(daily_avrg$steps_sum)
+```
+
+```
+## [1] 10395
 ```
 
 ## What is the average daily activity pattern?
 
 ### Time series plot of daily activity (NA values ignored)
-```{r}
+
+```r
 interval_avrg <- act_data %>%
     group_by(interval) %>%
     select(steps) %>%
@@ -46,28 +108,33 @@ ggplot(interval_avrg, aes(interval,steps_mean))+
     geom_line()
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)
+
 ### Identifying the interval with the most steps
 
-```{r}
+
+```r
 interval <- which.max(interval_avrg$steps_mean)
 max_steps <- max(interval_avrg$steps_mean)
 ```
-The interval showing the highest number of steps is `r interval` with a maximum average of `r max_steps` steps.
+The interval showing the highest number of steps is 104 with a maximum average of 206.1698113 steps.
 
 
 ## Imputing missing values
 
 ### Total number of missing values
-```{r}
+
+```r
 total_nas <- sum(is.na(act_data))
 ratio_nas <- sum(is.na(act_data))/nrow(act_data)*100
 ```
 
-A total of `r total_nas` values are missing from the dataset, representing `r ratio_nas`% of the data.
+A total of 2304 values are missing from the dataset, representing 13.1147541% of the data.
 
 ### Filling in the missing values
 The missing values are replaced by the average of the corresponding time interval.
-```{r}
+
+```r
 impute.mean <- function(x){
     replace(x, is.na(x), mean(x, na.rm = TRUE))
 }
@@ -79,7 +146,8 @@ act_imputed <- act_data %>%
 
 ### Histogram of the daily total steps
 The histogram shows the density distribution of the total number of steps per day.
-```{r}
+
+```r
 act_imp_daily  <- act_imputed %>%
     group_by(date) %>%
     select(steps) %>%
@@ -88,16 +156,31 @@ ggplot(act_imp_daily, aes(steps_sum))+
     geom_histogram(binwidth=1000)
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png)
+
 #### Compute the mean and median of total daily steps
-```{r}
+
+```r
 mean(act_imp_daily$steps_sum)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(act_imp_daily$steps_sum)
+```
+
+```
+## [1] 10766.19
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
 ### Factoring weekdays and weekends
-```{r}
+
+```r
 act_imputed$date <- ymd(act_imputed$date)
 act_imputed <- act_imputed %>%
     ungroup() %>%
@@ -113,8 +196,11 @@ act_imputed <- act_imputed %>%
 ```
 
 ### Panel plot showing weekdays and weekend patterns
-```{r}
+
+```r
 ggplot(act_imputed, aes(interval, steps_mean))+
     geom_line()+
     facet_grid(week ~ .)
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-11-1.png)
